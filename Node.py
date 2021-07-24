@@ -11,8 +11,7 @@ class Node:
         self.parent_mov='' # the move has been done from the parent node
         self.child = copy(child) # list of all the child nodes
         self._path_cost=0 # cost of the path from the root to this node
-        self._heuristic_dist=None # heuristic function
-        self._heuristic_value=None # heuristic value
+        self.total_cost=None # heuristic value
         self._depth=depth # depth of this node
         Node.id += 1
         self._id=copy(Node.id) # node id, the first node (root) has id=0

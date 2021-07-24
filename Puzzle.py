@@ -3,11 +3,11 @@ from copy import deepcopy
 
 class Puzzle:
 
-    goal=np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
+    goal=np.array([[0,1, 2], [3, 4, 5], [6, 7, 8]])
 
-    def __init__(self,matrix,heuristic_function=None) -> None:
+    def __init__(self,matrix,heuristic='manhattan') -> None:
         self.matrix=matrix # the configuration of the puzzle
-        self.heuristic_function=heuristic_function
+        self.heuristic=heuristic
         # r and c are cordinates of the empty cell, that is the 0
         self.r,self.c=np.argwhere(self.matrix == 0)[0]
 
@@ -75,11 +75,32 @@ class Puzzle:
         '''Return True if the current state is equal to the goal state '''
         return np.all(self.matrix==Puzzle.goal)
 
+    def heuristic_function(self):
+        state = self.matrix
+        goal = Puzzle.goal
+        heuristic_value = 0
+        numbers = np.unique(goal)
+        for el in numbers[1::]:  # we consider only the tiles from 1 to 8, we don't consider the blank space
+            ix, iy = np.argwhere(state == el)[0]
+            ix_goal, iy_goal = np.argwhere(goal == el)[0]
+            if self.heuristic == 'manhattan':
+                heuristic_value += np.abs(ix - ix_goal) + np.abs(iy - iy_goal)
+            elif self.heuristic == 'mis_tiles':
+                if (ix != ix_goal) or (iy != iy_goal):
+                    heuristic_value += 1
+            else:
+                raise ValueError("It's not defined any heuristic choice in heuristic function()")
+        return heuristic_value
+
 if __name__=='__main__':
-    state=np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
+    state=np.array([[7,2,4], [5,0,6], [8,3,1]])
     goal = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
-    p = Puzzle(state,goal)
+    p = Puzzle(state)
     print(p.goal_test())
+    d=p.heuristic_function(choice='mis_tiles')
+    d2 = p.heuristic_function(choice='manhattan')
+    print(d,d2)
+
 
     # from time import time
     #
