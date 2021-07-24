@@ -1,16 +1,16 @@
-# This is a sample Python script.
+import numpy as np
+from Node import *
+from Puzzle import *
+from Strategy import *
+from Tree import *
 
-# Press Maiusc+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    state = np.array([[1, 2, 3], [5, 6, 0], [4, 7, 8]])
+    goal = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
+    p = Puzzle(state, goal)
+    n=Node(p)
+    tree=Tree(n,strategy=BreadthFirst())
+    sol=tree.resolve()
+    print(sol)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+

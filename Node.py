@@ -19,7 +19,7 @@ class Node:
 
     def expand(self):
         '''Expand the node, so it fills the list self.child'''
-        p_child=self.puzzle.get_next_configurations()
+        p_child=self.puzzle.calculate_next_configurations()
         for mov,p in p_child:
             n=Node(puzzle=p,parent=self,depth=self._depth+1)
             n.parent_mov = mov

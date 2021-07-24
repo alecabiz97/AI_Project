@@ -3,9 +3,10 @@ from copy import deepcopy
 
 class Puzzle:
 
-    def __init__(self,matrix,target=None,heuristic_function=None) -> None:
+    goal=np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
+
+    def __init__(self,matrix,heuristic_function=None) -> None:
         self.matrix=matrix # the configuration of the puzzle
-        self.target=target
         self.heuristic_function=heuristic_function
         # r and c are cordinates of the empty cell, that is the 0
         self.r,self.c=np.argwhere(self.matrix == 0)[0]
@@ -70,26 +71,33 @@ class Puzzle:
         '''Return True if the 2 puzzle are equal'''
         return np.all(self.matrix==p2.matrix)
 
+    def goal_test(self):
+        '''Return True if the current state is equal to the goal state '''
+        return np.all(self.matrix==Puzzle.goal)
 
 if __name__=='__main__':
+    state=np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
+    goal = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
+    p = Puzzle(state,goal)
+    print(p.goal_test())
 
-    from time import time
-
-    s = time()
-    m = np.array([[1, 2, 3], [4, 0, 5], [6, 7, 8]])
-    p = Puzzle(m)
-    #p2 = Puzzle(np.array([[1, 2, 3], [4, 5, 8], [6, 7, 0]]))
-    # print(p == p2)
-    X = p.calculate_next_configurations()
-    print('Initial state')
-    print(p.matrix)
-    for x in X:
-        mov, pp = x
-        print(mov)
-        print(pp.matrix)
-
-    e = time()
-    print(e - s)
+    # from time import time
+    #
+    # s = time()
+    # m = np.array([[1, 2, 3], [4, 0, 5], [6, 7, 8]])
+    # p = Puzzle(m)
+    # #p2 = Puzzle(np.array([[1, 2, 3], [4, 5, 8], [6, 7, 0]]))
+    # # print(p == p2)
+    # X = p.calculate_next_configurations()
+    # print('Initial state')
+    # print(p.matrix)
+    # for x in X:
+    #     mov, pp = x
+    #     print(mov)
+    #     print(pp.matrix)
+    #
+    # e = time()
+    # print(e - s)
 
 
 

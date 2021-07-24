@@ -7,12 +7,12 @@ from Strategy import *
 
 class Tree:
 
-    def __init__(self,root,target,strategy=None) -> None:
+    def __init__(self,root,strategy=None) -> None:
         self.root = root # Root node
-        self.target = target # Target node
+        #self.target = target # Target node
         self.strategy = strategy # Search algorithm strategy
         self.new_nodes=[root] # list of the nodes not already expanded
-        self.number_of_nodes=1
+        self.number_of_nodes=0
         self.expanded_nodes=[] # list of expanded node
         self._sol=False # if it's True I found a solution
         self.solution=None # list of action to do to reach the target
@@ -22,10 +22,10 @@ class Tree:
         return self.strategy.resolve(self)
 
 
-def test(X,X_target,strategy):
+def test(X,X_goal,strategy):
     p = Puzzle(X)
-    p_target = Puzzle(X_target)
-    t = Tree(Node(p), Node(p_target), strategy)
+    p_goal = Puzzle(X_goal)
+    t = Tree(Node(p), Node(p_goal), strategy)
     sol = t.resolve()
 
     # d = {'U': 'up ', 'D': 'down ', 'L': 'left ', 'R': 'right '}
@@ -40,7 +40,7 @@ def test(X,X_target,strategy):
 if __name__=='__main__':
 
     X=np.array([[1, 2, 3], [4, 5, 6], [0, 7, 8]])
-    X_target=np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
+    X_goal=np.array([[1, 2, 3], [4, 5, 6], [7, 8, 0]])
     #
     #
     strategy=BreadthFirst()
@@ -49,9 +49,9 @@ if __name__=='__main__':
     # strategy = AStarBiderectionalStrategy()
     # strategy.set_heuristic_function(strategy._distance_manhattan)
 
-    test(X, X_target, strategy)
-    #test(X,X_target,breadth_first)
-    #test(X, X_target, dist_man)
+    test(X, X_goal, strategy)
+    #test(X,X_goal,breadth_first)
+    #test(X, X_goal, dist_man)
 
 
 

@@ -14,7 +14,7 @@ class Strategy(ABC):
         tree._sol = True
         tree.solution = n_sol.calculate_path()
         tree.depth_solution = n_sol._depth
-        return tree.solution
+        return tree.solution, tree.depth_solution
 
 
 class BreadthFirst(Strategy):
@@ -23,7 +23,7 @@ class BreadthFirst(Strategy):
         while (tree._sol == False):
             n = tree.new_nodes.pop(0) # I select the node from the top of the fringe
             if n not in tree.expanded_nodes: # Check if I have already expand that node
-                if n == tree.target:
+                if n.puzzle.goal_test():
                     return self.solution_found(n,tree) # return the solution
                 else:
                     n.expand() # n.expand() fills the list n.child
@@ -34,11 +34,6 @@ class BreadthFirst(Strategy):
 # Da rivedere
 class AStarStrategy(Strategy):
 
-    def __init__(self) -> None:
-        self.heuristic_function = self._distance_rubik
-
-    def set_heuristic_function(self,heur_f):
-        self.heuristic_function=heur_f
 
     def resolve(self, tree):
         while (tree._sol == False):
@@ -48,12 +43,12 @@ class AStarStrategy(Strategy):
             else:
                 n = tree.new_nodes.pop(0)
                 if n not in tree.expanded_nodes:
-                    if n == tree.target:
+                    if n == tree.goal:
                         return self.solution_found(n,tree)
                     else:
                         n.expand()
                         for nc in n.child:
-                            nc._heuristic_dist= self.heuristic_function(nc,tree.target)
+                            nc._heuristic_dist= self.heuristic_function(nc,tree.goal)
                             nc._heuristic_value= nc._path_cost + nc._heuristic_dist
                         tree.new_nodes.extend(n.child)
                         tree.new_nodes=self.sort_nodes(tree.new_nodes)
@@ -64,24 +59,14 @@ class AStarStrategy(Strategy):
                         tree.number_of_nodes += 1
                         print((len(tree.expanded_nodes),n._depth,n._heuristic_dist))
 
-    def _distance_manhattan(self,node,node_target):
+    def _distance_manhattan(self,node,node_goal):
         X=node.puzzle.matrix
-        X_target=node_target.puzzle.matrix
+        X_goal=node_goal.puzzle.matrix
         d=0
-        for el in X_target.flatten():
+        for el in X_goal.flatten():
             ix,iy=np.argwhere(X==el)[0]
-            ixt, iyt = np.argwhere(X_target == el)[0]
+            ixt, iyt = np.argwhere(X_goal == el)[0]
             d += np.abs(ix-ixt) + np.abs(iy-iyt)
-        return d
-
-    def _distance_rubik(self,node,node_target):
-        cub=node.puzzle
-        cub_target=node_target.puzzle
-        d=0
-        faces=cub.get_faces()
-        faces_target=cub_target.get_faces()
-        for f,f_target in zip(faces,faces_target):
-            d += (f != f_target).sum()
         return d
 
     def path_cost_function(self,node):
@@ -101,7 +86,7 @@ class DepthFirst(Strategy):
         while (tree._sol == False):
             n = tree.new_nodes.pop(0)
             if n not in tree.expanded_nodes:
-                if n == tree.target:
+                if n == tree.goal:
                     return self.solution_found(n,tree)
                 else:
                     n.expand()
@@ -133,8 +118,8 @@ class AStarBiderectionalStrategy(Strategy):
 
 
     def resolve(self, tree):
-        new_nodes2,expanded_nodes2=[deepcopy(tree.target)],[]
-        target2=deepcopy(tree.root)
+        new_nodes2,expanded_nodes2=[deepcopy(tree.goal)],[]
+        goal2=deepcopy(tree.root)
         cnt = 0
         while (tree._sol == False):
             if not tree.new_nodes: # if tree.new_nodes is empty
@@ -143,7 +128,7 @@ class AStarBiderectionalStrategy(Strategy):
             else:
                 n = tree.new_nodes.pop(0)
                 if n not in tree.expanded_nodes:
-                    #if n == tree.target:
+                    #if n == tree.goal:
                     #    return self.solution_found(n,tree)
                     if n in expanded_nodes2:
                         #idx=expanded_nodes2[expanded_nodes2==n]
@@ -155,7 +140,7 @@ class AStarBiderectionalStrategy(Strategy):
                         n.expand()
                         for nc in n.child:
                             # Normal search
-                            nc._heuristic_dist= self.heuristic_function(nc,tree.target)
+                            nc._heuristic_dist= self.heuristic_function(nc,tree.goal)
                             nc._heuristic_value= nc._path_cost + nc._heuristic_dist
                         tree.new_nodes.extend(n.child)
                         tree.new_nodes = [n for n in tree.new_nodes if n._depth < 25]
@@ -165,7 +150,7 @@ class AStarBiderectionalStrategy(Strategy):
 
                 n2 = new_nodes2.pop(0)
                 if n2 not in expanded_nodes2:
-                    if n2 == target2:
+                    if n2 == goal2:
                         print('Soluzione trovata')
                         return 1
                     elif n2 in tree.expanded_nodes:
@@ -178,7 +163,7 @@ class AStarBiderectionalStrategy(Strategy):
                         n2.expand()
                         #for nc2 in n2.child:
                             # Reverse search
-                            #nc2._heuristic_dist = self.heuristic_function(nc2, target2)
+                            #nc2._heuristic_dist = self.heuristic_function(nc2, goal2)
                             #nc2._heuristic_value = nc2._path_cost + nc2._heuristic_dist
                         # Reverse
                         new_nodes2.extend(n2.child)
@@ -195,36 +180,14 @@ class AStarBiderectionalStrategy(Strategy):
                                 return 1
                     cnt=0
 
-    def _distance_manhattan(self,node,node_target):
+    def _distance_manhattan(self,node,node_goal):
         X=node.puzzle.matrix
-        X_target=node_target.puzzle.matrix
+        X_goal=node_goal.puzzle.matrix
         d=0
-        for el in X_target.flatten():
+        for el in X_goal.flatten():
             ix,iy=np.argwhere(X==el)[0]
-            ixt, iyt = np.argwhere(X_target == el)[0]
+            ixt, iyt = np.argwhere(X_goal == el)[0]
             d += np.abs(ix-ixt) + np.abs(iy-iyt)
-        return d
-
-    def _distance_rubik(self,node,node_target):
-        cub=node.puzzle
-        cub_target=node_target.puzzle
-        d=0
-        faces=cub.get_faces()
-        faces_target=cub_target.get_faces()
-        for f,f_target in zip(faces,faces_target):
-            d += (f != f_target).sum()
-        return d
-
-
-    def _distance_rubik2(self,node,node_target):
-        cub=node.puzzle
-        cub_target=node_target.puzzle
-        d=0
-        faces=cub.get_faces()
-        faces_target=cub_target.get_faces()
-        n_faces=len(faces)
-        for f,f_target in zip(faces,faces_target):
-            d += (f != f_target).sum()
         return d
 
     def path_cost_function(self,node):
