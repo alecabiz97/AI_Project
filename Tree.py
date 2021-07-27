@@ -44,14 +44,9 @@ if __name__=='__main__':
     #
     #
     strategy=BreadthFirst()
-    # depth_first=DepthFirst()
-    # dist_man=AStarStrategy()
-    # strategy = AStarBiderectionalStrategy()
-    # strategy.set_heuristic_function(strategy._distance_manhattan)
 
     test(X, X_goal, strategy)
-    #test(X,X_goal,breadth_first)
-    #test(X, X_goal, dist_man)
+
 
 
 

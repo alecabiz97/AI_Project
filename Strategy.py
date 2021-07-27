@@ -21,25 +21,28 @@ class BreadthFirst(Strategy):
 
     def resolve(self, tree):
         while (tree._sol == False):
-            n = tree.new_nodes.pop(0) # I select the node from the top of the fringe
-            if n not in tree.expanded_nodes: # Check if I have already expand that node
-                if n.puzzle.goal_test():
-                    return self.solution_found(n,tree) # return the solution
-                else:
-                    n.expand() # n.expand() fills the list n.child
-                    tree.number_of_nodes += 1 # the number of the tree's nodes is the number of expanded nodes
-                    tree.new_nodes.extend(n.child) # the new nodes are put at the end of the fringe
-                    tree.expanded_nodes.append(n)
+            if not tree.new_nodes:  # if tree.new_nodes is empty
+                print('No solution')
+                return (None,None)
+            else:
+                n = tree.new_nodes.pop(0) # I select the node from the top of the fringe
+                if n not in tree.expanded_nodes: # Check if I have already expand that node
+                    if n.puzzle.goal_test():
+                        return self.solution_found(n,tree) # return the solution
+                    else:
+                        n.expand() # n.expand() fills the list n.child
+                        tree.number_of_nodes += 1 # the number of the tree's nodes is the number of expanded nodes
+                        tree.new_nodes.extend(n.child) # the new nodes are put at the end of the fringe
+                        tree.expanded_nodes.append(n)
 
-# Da rivedere
+
 class AStarStrategy(Strategy):
-
 
     def resolve(self, tree):
         while (tree._sol == False):
             if not tree.new_nodes: # if tree.new_nodes is empty
-                print('Nessuna soluzione')
-                return -1
+                print('No solution')
+                return (None,None)
             else:
                 n = tree.new_nodes.pop(0)
                 if n not in tree.expanded_nodes:
@@ -48,19 +51,12 @@ class AStarStrategy(Strategy):
                     else:
                         n.expand()
                         for nc in n.child:
-                            nc.total_cost= nc._path_cost + nc.puzzle.heuristic_function()
+                            nc.total_cost= nc._path_cost + nc.puzzle.heuristic_function() # Problema con path cost
                         tree.new_nodes.extend(n.child)
                         tree.new_nodes=self.sort_nodes(tree.new_nodes)
 
-                        #tree.new_nodes=[n for n in tree.new_nodes if n._depth < 25]
-
                         tree.expanded_nodes.append(n)
                         tree.number_of_nodes += 1
-                        #print((len(tree.expanded_nodes),n._depth))
-
-  
-    def path_cost_function(self,node):
-        return node._path_cost
 
     def sort_nodes(self,nodes):
         dists=[n.total_cost for n in nodes]
@@ -69,22 +65,61 @@ class AStarStrategy(Strategy):
         return sorted_nodes
 
 
-# Non funziona
 class DepthFirst(Strategy):
 
     def resolve(self, tree):
+        # n = tree.new_nodes.pop(0)
+        # node_solution=DepthFirst.dfs(tree,n)
+        # return self.solution_found(node_solution, tree)
+
         while (tree._sol == False):
-            n = tree.new_nodes.pop(0)
-            if n not in tree.expanded_nodes:
-                if n == tree.goal:
-                    return self.solution_found(n,tree)
+            if not tree.new_nodes:  # if tree.new_nodes is empty
+                print('No solution')
+                return (None,None)
+            else:
+                n = tree.new_nodes.pop(0)
+                if n not in tree.expanded_nodes and n._depth<3: # parametrizzare depth
+                    if n.puzzle.goal_test():
+                        return self.solution_found(n,tree)
+                    else:
+                        n.expand()
+                        for el in n.child:
+                            tree.new_nodes.insert(0,el)
+                        tree.expanded_nodes.append(n)
+                        tree.number_of_nodes += 1
                 else:
-                    n.expand()
-                    #tmp=n.child
-                    #tmp.extend(tree.new_nodes)
-                    #tree.new_nodes=tmp
-                    for el in n.child:
-                        tree.new_nodes.insert(0,el)
-                    tree.expanded_nodes.append(n)
-                    tree.number_of_nodes += 1
+                    DepthFirst.memory_management(n,tree)
+                    # eliminare n dalla lista dei figli del nodo padre
+                    # se il padre è senza figli rimuovo il padre e controllo il nonno
+                    # provare metodo ricorsivo
+                    # dfs(n,tree):
+                        # se n non ha padre
+                            # return
+                        # eliminare n dalla lista dei figli del nodo padre
+                        # controllare che il padre non abbia figli
+                            # eliminare il padre da tree.expanded_nodes
+                            # dfs(parentOfn,tree)
+                        # return
+
+    @staticmethod
+    def memory_management(n,tree):
+        # se n non ha padre
+        # return
+        parent=n.parent
+        if parent is None: # Check if n is the root
+            return True
+        else:
+            parent.child.remove(n) # eliminare n dalla lista dei figli del nodo padre
+            if not parent.child:
+                tree.expanded_nodes.remove(parent)
+                DepthFirst.memory_management(parent,tree)
+
+            # controllare che il padre non abbia figli
+                 # eliminare il padre da tree.expanded_nodes
+                 # dfs(parentOfn,tree)
+            # return
+
+
+
+
 

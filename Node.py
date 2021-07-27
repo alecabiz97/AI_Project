@@ -22,37 +22,10 @@ class Node:
         for mov,p in p_child:
             n=Node(puzzle=p,parent=self,depth=self._depth+1)
             n.parent_mov = mov
-            n._path_cost += self._path_cost + 0 # QUESTO DEVE ESSERE MODIFICATO
+            n._path_cost += self._path_cost + 1 # QUESTO DEVE ESSERE MODIFICATO
             self.child.append(n)
 
-    # First version
-    # def expand2(self):
-    #     up,down,left,right=self.puzzle.check_mov()
-    #     # Si può migliorare
-    #     if up:
-    #         p=Puzzle(deepcopy(self.puzzle.matrix))
-    #         p.mov_up()
-    #         n=Node(puzzle=p,parent=self,depth=self._depth+1)
-    #         n.parent_mov='U'
-    #         self.child.append(n)
-    #     if down:
-    #         p=Puzzle(deepcopy(self.puzzle.matrix))
-    #         p.mov_down()
-    #         n = Node(puzzle=p, parent=self, depth=self._depth + 1)
-    #         n.parent_mov = 'D'
-    #         self.child.append(n)
-    #     if left:
-    #         p=Puzzle(deepcopy(self.puzzle.matrix))
-    #         p.mov_left()
-    #         n = Node(puzzle=p, parent=self, depth=self._depth + 1)
-    #         n.parent_mov = 'L'
-    #         self.child.append(n)
-    #     if right:
-    #         p=Puzzle(deepcopy(self.puzzle.matrix))
-    #         p.mov_right()
-    #         n = Node(puzzle=p, parent=self, depth=self._depth + 1)
-    #         n.parent_mov = 'R'
-    #         self.child.append(n)
+
 
     def calculate_path(self):
         '''Return the moves from the root node to the target'''
@@ -64,6 +37,9 @@ class Node:
             self=self.parent
         # Reverse the order of the moves from target -> root to root -> target
         return path[::-1]
+
+    def __str__(self):
+        return str(self.puzzle)
 
     def __eq__(self,node2):
         '''Return true if the state in the two nodes are the same'''
