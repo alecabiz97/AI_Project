@@ -67,6 +67,9 @@ class AStarStrategy(Strategy):
 
 class DepthFirst(Strategy):
 
+    def __init__(self,max_depth=0):
+        self.max_depth=max_depth
+
     def resolve(self, tree):
         # n = tree.new_nodes.pop(0)
         # node_solution=DepthFirst.dfs(tree,n)
@@ -78,7 +81,7 @@ class DepthFirst(Strategy):
                 return (None,None)
             else:
                 n = tree.new_nodes.pop(0)
-                if n not in tree.expanded_nodes and n._depth<3: # parametrizzare depth
+                if n not in tree.expanded_nodes and (n._depth<self.max_depth or self.max_depth==0):
                     if n.puzzle.goal_test():
                         return self.solution_found(n,tree)
                     else:
