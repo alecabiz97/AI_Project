@@ -27,8 +27,8 @@ if __name__ == '__main__':
     index = []
     for state in states:
         print('Initial Configuration:\n', state)
-        for strategy in [AStarSearch('manhattan'), AStarSearch('mis_tiles'), BreadthFirst(),
-                         DepthFirst(max_depth=5)]:
+        for strategy in [BreadthFirst(),
+                         DepthFirst(max_depth=5), AStarSearch('manhattan'), AStarSearch('mis_tiles')]:
             p = Puzzle(state)
             n = Node(p)
             tree = Tree(n, strategy=strategy)

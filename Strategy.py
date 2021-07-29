@@ -50,41 +50,6 @@ class BreadthFirst(Strategy):
                         tree.expanded_nodes.append(n)
 
 
-class AStarSearch(Strategy):
-
-    def __init__(self, heuristic_choice=None, max_depth=0):
-        super().__init__(heuristic_choice, max_depth)
-
-    def resolve(self, tree):
-        #print('Heuristic used ->', self.heuristic_choice)
-        while tree.sol == False:
-            if not tree.leaves:  # if tree.leaves is empty
-                print('No solution')
-                return None, None
-            else:
-                n = tree.leaves.pop(0)  # I select the node from the top of the fringe
-                if n not in tree.expanded_nodes:
-                    if n.puzzle.goal_test():
-                        return self.solution_found(n, tree)
-                    else:
-                        n.expand()
-                        # For each child node in n.children I calculate the total cost f = g + h
-                        for nc in n.children:
-                            nc.total_cost = nc.path_cost + nc.puzzle.heuristic_function(self.heuristic_choice)
-                        tree.leaves.extend(n.children)
-                        # Sorting the leaves based on the total_cost,from the smallest to the biggest
-                        tree.leaves = self.sort_nodes(tree.leaves)
-                        tree.expanded_nodes.append(n)
-                        tree.number_of_nodes += 1
-
-    def sort_nodes(self, nodes):
-        """Return the list of nodes sorted with respect to the smallest total cost"""
-        dists = [n.total_cost for n in nodes]
-        sorted_index = np.argsort(dists)
-        sorted_nodes = [nodes[i] for i in sorted_index]
-        return sorted_nodes
-
-
 class DepthFirst(Strategy):
     def __init__(self, heuristic_choice=None, max_depth=0):
         # For the DepthFirst limited, if it's 0 is DepthFirst without limitation of depth
@@ -123,3 +88,37 @@ class DepthFirst(Strategy):
                 tree.expanded_nodes.remove(parent)
                 # I call recursive the function on the parent
                 DepthFirst.memory_management(parent, tree)
+
+class AStarSearch(Strategy):
+
+    def __init__(self, heuristic_choice=None, max_depth=0):
+        super().__init__(heuristic_choice, max_depth)
+
+    def resolve(self, tree):
+        # print('Heuristic used ->', self.heuristic_choice)
+        while tree.sol == False:
+            if not tree.leaves:  # if tree.leaves is empty
+                print('No solution')
+                return None, None
+            else:
+                n = tree.leaves.pop(0)  # I select the node from the top of the fringe
+                if n not in tree.expanded_nodes:
+                    if n.puzzle.goal_test():
+                        return self.solution_found(n, tree)
+                    else:
+                        n.expand()
+                        # For each child node in n.children I calculate the total cost f = g + h
+                        for nc in n.children:
+                            nc.total_cost = nc.path_cost + nc.puzzle.heuristic_function(self.heuristic_choice)
+                        tree.leaves.extend(n.children)
+                        # Sorting the leaves based on the total_cost,from the smallest to the biggest
+                        tree.leaves = self.sort_nodes(tree.leaves)
+                        tree.expanded_nodes.append(n)
+                        tree.number_of_nodes += 1
+
+    def sort_nodes(self, nodes):
+        """Return the list of nodes sorted with respect to the smallest total cost"""
+        dists = [n.total_cost for n in nodes]
+        sorted_index = np.argsort(dists)
+        sorted_nodes = [nodes[i] for i in sorted_index]
+        return sorted_nodes
