@@ -99,7 +99,3 @@ class Puzzle:
     # if we change the problem this method will be overridden
     def get_path_cost(self):
         return 1
-
-
-
-

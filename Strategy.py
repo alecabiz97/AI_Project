@@ -22,9 +22,9 @@ class Strategy(ABC):
             :return
                 tree.solution -> list of moves from the root to the goal
                 tree.depth_solution -> depth of the goal node"""
-        tree._sol = True
+        tree.sol = True
         tree.solution = n_sol.calculate_path()
-        tree.depth_solution = n_sol._depth
+        tree.depth_solution = n_sol.depth
         return tree.solution, tree.depth_solution
 
 
@@ -34,7 +34,7 @@ class BreadthFirst(Strategy):
         super().__init__(heuristic_choice, max_depth)
 
     def resolve(self, tree):
-        while tree._sol == False:
+        while tree.sol == False:
             if not tree.leaves:  # if tree.leaves is empty
                 print('No solution')
                 return None, None
@@ -50,14 +50,14 @@ class BreadthFirst(Strategy):
                         tree.expanded_nodes.append(n)
 
 
-class AStarStrategy(Strategy):
+class AStarSearch(Strategy):
 
     def __init__(self, heuristic_choice=None, max_depth=0):
         super().__init__(heuristic_choice, max_depth)
 
     def resolve(self, tree):
-        print('Heuristic used ->', self.heuristic_choice)
-        while tree._sol == False:
+        #print('Heuristic used ->', self.heuristic_choice)
+        while tree.sol == False:
             if not tree.leaves:  # if tree.leaves is empty
                 print('No solution')
                 return None, None
@@ -70,7 +70,7 @@ class AStarStrategy(Strategy):
                         n.expand()
                         # For each child node in n.children I calculate the total cost f = g + h
                         for nc in n.children:
-                            nc.total_cost = nc._path_cost + nc.puzzle.heuristic_function(self.heuristic_choice)
+                            nc.total_cost = nc.path_cost + nc.puzzle.heuristic_function(self.heuristic_choice)
                         tree.leaves.extend(n.children)
                         # Sorting the leaves based on the total_cost,from the smallest to the biggest
                         tree.leaves = self.sort_nodes(tree.leaves)
@@ -91,13 +91,13 @@ class DepthFirst(Strategy):
         super().__init__(heuristic_choice, max_depth)
 
     def resolve(self, tree):
-        while tree._sol == False:
+        while tree.sol == False:
             if not tree.leaves:  # if tree.leaves is empty
                 print('No solution')
                 return None, None
             else:
                 n = tree.leaves.pop(0)  # I select the node from the top of the fringe
-                if n not in tree.expanded_nodes and (n._depth < self.max_depth or self.max_depth == 0):
+                if n not in tree.expanded_nodes and (n.depth < self.max_depth or self.max_depth == 0):
                     if n.puzzle.goal_test():  # Check if n contains the goal state
                         return self.solution_found(n, tree)
                     else:

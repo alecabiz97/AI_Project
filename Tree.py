@@ -1,6 +1,3 @@
-from Strategy import *
-
-
 class Tree:
 
     def __init__(self, root, strategy=None) -> None:
@@ -9,7 +6,7 @@ class Tree:
         self.leaves = [root]  # list of leaves that will be expanded
         self.number_of_nodes = 0
         self.expanded_nodes = []  # list of expanded nodes
-        self._sol = False  # if it's True I found a solution
+        self.sol = False  # if it's True I found a solution
         self.solution = None  # list of action to do to reach the goal
         self.depth_solution = None  # depth of the goal node
 
@@ -25,5 +22,3 @@ class Tree:
             return round(b / len(self.expanded_nodes), 3)
         else:
             raise ZeroDivisionError('tree.expanded node is empty')
-
-
