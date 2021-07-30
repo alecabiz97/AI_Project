@@ -13,11 +13,12 @@ if __name__ == '__main__':
     #                   [8, 0, 11, 15],
     #                   [12, 9, 13, 14]])
     states = [np.array([[1, 2, 5],
-                        [3, 4, 0],
-                        [6, 7, 8]])]
+                        [6, 3, 8],
+                        [0, 4, 7]])]
 
     # creating a DataFrame
     dict = {'Heuristic': [],
+            'MaxDepth':[],
             'Branching\n Factor': [],
             'Depth': [],
             'Expanded\n Nodes': [],
@@ -28,7 +29,10 @@ if __name__ == '__main__':
     for state in states:
         print('Initial Configuration:\n', state)
         for strategy in [BreadthFirst(),
-                         DepthFirst(max_depth=5), AStarSearch('manhattan'), AStarSearch('mis_tiles')]:
+                         DepthFirst(max_depth=0),
+                         DepthFirst(max_depth=15),
+                         AStarSearch('manhattan'),
+                         AStarSearch('mis_tiles')]:
             p = Puzzle(state)
             n = Node(p)
             tree = Tree(n, strategy=strategy)
@@ -41,6 +45,7 @@ if __name__ == '__main__':
             # print('  Average branching factor', tree.calculate_branching_factor())
             index.append(strategy.__class__.__name__)
             dict['Heuristic'].append(strategy.heuristic_choice)
+            dict['MaxDepth'].append(strategy.max_depth)
             dict['Branching\n Factor'].append(tree.calculate_branching_factor())
             dict['Depth'].append(depth)
             dict['Expanded\n Nodes'].append(tree.number_of_nodes)

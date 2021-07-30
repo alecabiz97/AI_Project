@@ -4,7 +4,7 @@ from Tree import *
 
 
 class Strategy(ABC):
-    @abstractmethod
+
     def __init__(self, heuristic_choice=None, max_depth=0):
         self.heuristic_choice = heuristic_choice  # It's a string
         self.max_depth = max_depth
@@ -88,6 +88,7 @@ class DepthFirst(Strategy):
                 tree.expanded_nodes.remove(parent)
                 # I call recursive the function on the parent
                 DepthFirst.memory_management(parent, tree)
+
 
 class AStarSearch(Strategy):
 
